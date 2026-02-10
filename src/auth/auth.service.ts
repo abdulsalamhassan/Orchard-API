@@ -55,4 +55,39 @@ export class AuthService {
         const hash = await bcrypt.hash(refreshToken, 10);
         await this.usersService.updateRefreshToken(userId, hash);
     }
+
+    async refreshTokens(refreshToken: string) {
+        try {
+            const payload = await this.jwtService.verifyAsync(refreshToken, {
+                secret: process.env.JWT_REFRESH_SECRET,
+            });
+
+            const user = await this.usersService.findById(payload.sub);
+            if (!user || !user.refreshTokenHash) {
+                throw new UnauthorizedException();
+            }
+
+            const valid = await bcrypt.compare(
+                refreshToken,
+                user.refreshTokenHash,
+            );
+
+            if (!valid) {
+                throw new UnauthorizedException();
+            }
+
+            const tokens = await this.generateTokens(user.id, user.email);
+            await this.storeRefreshToken(user.id, tokens.refreshToken);
+
+            return tokens;
+        } catch {
+            throw new UnauthorizedException('Invalid refresh token');
+        }
+    }
+
+    async logout(userId: string) {
+        await this.usersService.updateRefreshToken(userId, null);
+    }
+
+
 }
