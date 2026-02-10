@@ -1,16 +1,18 @@
+version: "3.9"
+
 services:
   postgres:
     image: postgres:16
-    container_name: nest_postgres
-    restart: always
+    container_name: taskflow-postgres
     ports:
-      - "5432:5432"
+      - "5437:5432"
     environment:
-      POSTGRES_USER: car_value_user
-      POSTGRES_PASSWORD: 123456789
-      POSTGRES_DB: car_value_db
+      POSTGRES_USER: taskflow
+      POSTGRES_PASSWORD: taskflow
+      POSTGRES_DB: taskflow
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data
+    restart: unless-stopped
 
 volumes:
-  pgdata:
+  postgres_data:
