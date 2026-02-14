@@ -18,9 +18,17 @@ import { CreateTaskDto } from './dto/create-task.dto';
 import { UpdateTaskDto } from './dto/update-task.dto';
 import type { RequestWithOrg } from '../common/request-with-org.interface';
 import { PaginationQueryDto } from '../common/dto/pagination-query.dto';
+import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
 
 @Controller('projects/:projectId/tasks')
 @UseGuards(JwtAuthGuard, OrgMembershipGuard)
+@ApiTags('tasks')
+@ApiBearerAuth()
+@ApiHeader({
+  name: 'x-organization-id',
+  required: true,
+  description: 'Organization scope for the request',
+})
 export class TasksController {
   constructor(private readonly tasksService: TasksService) {}
 

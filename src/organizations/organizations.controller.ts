@@ -3,9 +3,17 @@ import { OrganizationsService } from './organizations.service';
 import { CreateOrganizationDto } from './dto/create-organization.dto';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { CurrentUser } from '../auth/decorators/current-user.decorator';
+import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
 
 @Controller('organizations')
 @UseGuards(JwtAuthGuard)
+@ApiTags('organizations')
+@ApiBearerAuth()
+@ApiHeader({
+    name: 'x-organization-id',
+    required: false,
+    description: 'Active organization for scoped routes',
+})
 export class OrganizationsController {
     constructor(private readonly orgService: OrganizationsService) { }
 

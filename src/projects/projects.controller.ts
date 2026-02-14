@@ -18,9 +18,17 @@ import { CreateProjectDto } from './dto/create-project.dto';
 import { ProjectsService } from './projects.service';
 import { PaginationQueryDto } from 'src/common/dto/pagination-query.dto';
 import { UpdateProjectDto } from './dto/update-project.dto';
+import { ApiBearerAuth, ApiHeader, ApiTags } from '@nestjs/swagger';
 
 @Controller('projects')
 @UseGuards(JwtAuthGuard, OrgMembershipGuard)
+@ApiTags('projects')
+@ApiBearerAuth()
+@ApiHeader({
+    name: 'x-organization-id',
+    required: true,
+    description: 'Organization scope for the request',
+})
 export class ProjectsController {
     constructor(private readonly projectsService: ProjectsService) { }
 
