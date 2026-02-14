@@ -5,6 +5,7 @@ import { UsersModule } from './users/users.module';
 import { PrismaModule } from './prisma/prisma.module';
 import { OrganizationsModule } from './organizations/organizations.module';
 import { ProjectsModule } from './projects/projects.module';
+import { TasksModule } from './tasks/tasks.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { ProjectsModule } from './projects/projects.module';
     PrismaModule,
     OrganizationsModule,
     ProjectsModule,
+    TasksModule,
   ]
 })
 export class AppModule { }
