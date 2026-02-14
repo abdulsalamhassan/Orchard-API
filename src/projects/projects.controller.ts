@@ -2,7 +2,7 @@ import { Controller, UseGuards, Post, Get, Req, Body } from '@nestjs/common';
 import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 import { OrgMembershipGuard } from '../auth/guards/org-membership.guard';
 import { ActiveOrg } from 'src/auth/decorators/active-org.decorator';
-import { RequestWithOrg } from 'src/common/request-with-org.interface';
+import type { RequestWithOrg } from 'src/common/request-with-org.interface';
 import { CreateProjectDto } from './dto/create-project.dto';
 import { ProjectsService } from './projects.service';
 

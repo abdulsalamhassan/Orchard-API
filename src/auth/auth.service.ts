@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
-import { v4 as uuidv4 } from 'uuid';
+import { randomUUID } from 'crypto';
 
 @Injectable()
 export class AuthService {
@@ -46,7 +46,7 @@ export class AuthService {
         const refreshToken = await this.jwtService.signAsync(
             {
                 sub: userId,
-                jti: uuidv4(), // 🔥 critical
+                jti: randomUUID(),
             },
             {
                 secret: process.env.JWT_REFRESH_SECRET,
@@ -98,3 +98,4 @@ export class AuthService {
 
 
 }
+
