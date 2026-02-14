@@ -14,7 +14,8 @@ model User {
   createdAt        DateTime @default(now())
   updatedAt        DateTime @updatedAt
 
-  memberships OrganizationMember[]
+  memberships     OrganizationMember[]
+  createdProjects Project[]
 }
 
 model Organization {
@@ -23,20 +24,21 @@ model Organization {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  members   OrganizationMember[]
+  members  OrganizationMember[]
+  projects Project[]
 }
 
 model OrganizationMember {
-  id             String   @id @default(cuid())
-  role           Role
+  id   String @id @default(cuid())
+  role Role
 
-  userId         String
-  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
-  createdAt      DateTime @default(now())
+  createdAt DateTime @default(now())
 
   @@unique([userId, organizationId])
 }
@@ -47,3 +49,14 @@ enum Role {
   MEMBER
 }
 
+model Project {
+  id             String   @id @default(uuid())
+  name           String
+  description    String?
+  organizationId String
+  createdById    String
+  createdAt      DateTime @default(now())
+
+  organization Organization @relation(fields: [organizationId], references: [id])
+  createdBy    User         @relation(fields: [createdById], references: [id])
+}
