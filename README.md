@@ -1,99 +1,160 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="120" alt="Nest Logo" /></a>
-</p>
+# Multi-Tenant API
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+NestJS REST API for multi-tenant project and task management.
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg" alt="Donate us"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow" alt="Follow us on Twitter"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+## Overview
 
-## Description
+This service provides:
+- JWT authentication with access + refresh tokens
+- Organization membership and tenant scoping
+- CRUD for projects within an organization
+- CRUD for tasks within a project
+- Pagination support on list endpoints
+- Request validation, centralized exception handling, and structured logging
+- OpenAPI/Swagger docs
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+Tech stack:
+- NestJS 11
+- Prisma ORM
+- PostgreSQL
+- Passport JWT
+- Swagger (`/docs`)
+- Winston logging
 
-## Project setup
+## Architecture
 
-```bash
-$ npm install
-```
+Core modules:
+- `auth`: register, login, refresh, logout
+- `organizations`: create organizations and membership handling
+- `projects`: organization-scoped project CRUD
+- `tasks`: project-scoped task CRUD
+- `users`: user persistence and auth support
+- `prisma`: database client and connection lifecycle
 
-## Compile and run the project
+Data model highlights:
+- `User`
+- `Organization`
+- `OrganizationMember` (with `OWNER | ADMIN | MEMBER` role)
+- `Project` (belongs to organization)
+- `Task` (belongs to project + organization)
 
-```bash
-# development
-$ npm run start
+## Prerequisites
 
-# watch mode
-$ npm run start:dev
+- Node.js 20+
+- npm
+- PostgreSQL 16+
 
-# production mode
-$ npm run start:prod
-```
+Optional: run PostgreSQL via Docker Compose.
 
-## Run tests
+## Setup
 
-```bash
-# unit tests
-$ npm run test
-
-# e2e tests
-$ npm run test:e2e
-
-# test coverage
-$ npm run test:cov
-```
-
-## Deployment
-
-When you're ready to deploy your NestJS application to production, there are some key steps you can take to ensure it runs as efficiently as possible. Check out the [deployment documentation](https://docs.nestjs.com/deployment) for more information.
-
-If you are looking for a cloud-based platform to deploy your NestJS application, check out [Mau](https://mau.nestjs.com), our official platform for deploying NestJS applications on AWS. Mau makes deployment straightforward and fast, requiring just a few simple steps:
+1. Install dependencies
 
 ```bash
-$ npm install -g @nestjs/mau
-$ mau deploy
+npm install
 ```
 
-With Mau, you can deploy your application in just a few clicks, allowing you to focus on building features rather than managing infrastructure.
+2. Create `.env` in the project root
 
-## Resources
+```env
+DATABASE_URL="postgresql://taskflow:taskflow@localhost:5437/taskflow"
+JWT_ACCESS_SECRET="replace-with-strong-secret"
+JWT_ACCESS_TTL="15m"
+JWT_REFRESH_SECRET="replace-with-strong-secret"
+PORT=3000
+LOG_LEVEL=info
+```
 
-Check out a few resources that may come in handy when working with NestJS:
+3. Start PostgreSQL (optional, Docker)
 
-- Visit the [NestJS Documentation](https://docs.nestjs.com) to learn more about the framework.
-- For questions and support, please visit our [Discord channel](https://discord.gg/G7Qnnhy).
-- To dive deeper and get more hands-on experience, check out our official video [courses](https://courses.nestjs.com/).
-- Deploy your application to AWS with the help of [NestJS Mau](https://mau.nestjs.com) in just a few clicks.
-- Visualize your application graph and interact with the NestJS application in real-time using [NestJS Devtools](https://devtools.nestjs.com).
-- Need help with your project (part-time to full-time)? Check out our official [enterprise support](https://enterprise.nestjs.com).
-- To stay in the loop and get updates, follow us on [X](https://x.com/nestframework) and [LinkedIn](https://linkedin.com/company/nestjs).
-- Looking for a job, or have a job to offer? Check out our official [Jobs board](https://jobs.nestjs.com).
+```bash
+docker compose up -d
+```
 
-## Support
+4. Run Prisma migrations
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+```bash
+npx prisma migrate dev
+```
 
-## Stay in touch
+5. Start the API
 
-- Author - [Kamil Myśliwiec](https://twitter.com/kammysliwiec)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
+```bash
+npm run start:dev
+```
+
+## API Docs
+
+Swagger UI is available at:
+
+- `http://localhost:3000/docs`
+
+## Authentication and Tenant Scope
+
+- Protected routes require: `Authorization: Bearer <accessToken>`
+- Organization-scoped routes require: `x-organization-id: <organizationId>`
+
+Typical flow:
+1. `POST /auth/register`
+2. `POST /auth/login`
+3. `POST /organizations` (authenticated)
+4. Use returned org id in `x-organization-id`
+5. Call `/projects` and `/projects/:projectId/tasks`
+
+## Endpoint Summary
+
+Auth:
+- `POST /auth/register`
+- `POST /auth/login`
+- `POST /auth/refresh`
+- `POST /auth/logout`
+
+Organizations:
+- `POST /organizations`
+- `GET /organizations/debug`
+
+Projects (auth + org header):
+- `POST /projects`
+- `GET /projects`
+- `GET /projects/:id`
+- `PATCH /projects/:id`
+- `DELETE /projects/:id`
+
+Tasks (auth + org header):
+- `POST /projects/:projectId/tasks`
+- `GET /projects/:projectId/tasks`
+- `GET /projects/:projectId/tasks/:id`
+- `PATCH /projects/:projectId/tasks/:id`
+- `DELETE /projects/:projectId/tasks/:id`
+
+## Pagination
+
+List endpoints support `page` and `limit` query params:
+
+- `GET /projects?page=1&limit=10`
+- `GET /projects/:projectId/tasks?page=1&limit=20`
+
+## Scripts
+
+```bash
+npm run start         # start server
+npm run start:dev     # start in watch mode
+npm run build         # build
+npm run start:prod    # run built app
+npm run lint          # lint
+npm run test          # unit tests
+npm run test:e2e      # e2e tests
+npm run test:cov      # coverage
+```
+
+## Testing
+
+Run all tests:
+
+```bash
+npm run test && npm run test:e2e
+```
 
 ## License
 
-Nest is [MIT licensed](https://github.com/nestjs/nest/blob/master/LICENSE).
-"# multi-tenant-API" 
+UNLICENSED
