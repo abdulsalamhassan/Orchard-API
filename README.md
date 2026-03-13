@@ -1,4 +1,4 @@
-# Multi-Tenant API
+# Orchard API
 
 NestJS REST API for multi-tenant project and task management.
 
